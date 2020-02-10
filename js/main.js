@@ -9,7 +9,7 @@ var MIN_NUMBER_AVATAR = 6;
 
 var NUMBER_COMMENTS = 4;
 
-var arrayMessages = [
+var USER_MESSAGES = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концо это просто непрофессионально.',
@@ -17,7 +17,7 @@ var arrayMessages = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой нудачный момент?!'
 ];
-var arrayNames = [
+var USER_NAMES = [
   'Дима',
   'Александр',
   'Джон',
@@ -35,7 +35,7 @@ var getNumber = function (min, max) {
 };
 
 var getMessage = function (messages) {
-  return messages[getNumber(0, arrayMessages.length) - 1];
+  return messages[getNumber(0, messages.length) - 1];
 };
 
 var getArrayComments = function (messages) {
@@ -44,7 +44,7 @@ var getArrayComments = function (messages) {
     arrayComments[i] = {
       avatar: 'img/avatar-' + getNumber(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR),
       message: getMessage(messages),
-      name: arrayNames[getNumber(0, arrayNames.length)]
+      name: USER_NAMES[getNumber(0, USER_NAMES.length) - 1]
     };
   }
 
@@ -59,7 +59,7 @@ var addArrayWithData = function () {
       url: 'photos/' + (i + 1) + '.jpg',
       description: 'description photo',
       likes: getNumber(MIN_LIKES, MAX_LIKES),
-      comments: getArrayComments(arrayMessages)
+      comments: getArrayComments(USER_MESSAGES)
     };
   }
 
