@@ -4,8 +4,8 @@ var PHOTOS_MAX_COUNT = 25;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 
-var MAX_NUMBER_AVATAR = 1;
-var MIN_NUMBER_AVATAR = 6;
+var MIN_NUMBER_AVATAR = 1;
+var MAX_NUMBER_AVATAR = 6;
 
 var NUMBER_COMMENTS = 4;
 
@@ -34,8 +34,12 @@ var getNumber = function (min, max) {
   return Math.floor(Math.ceil(Math.random() * (max - min)) + min);
 };
 
+var getRandomElementFromArray = function (elements) {
+  return elements[getNumber(0, elements.length)];
+};
+
 var getMessage = function (messages) {
-  return messages[getNumber(0, messages.length) - 1];
+  return getRandomElementFromArray(messages);
 };
 
 var generateComments = function (messages) {
@@ -44,7 +48,7 @@ var generateComments = function (messages) {
     comments.push({
       avatar: 'img/avatar-' + getNumber(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR),
       message: getMessage(messages),
-      name: USER_NAMES[getNumber(0, USER_NAMES.length) - 1]
+      name: getRandomElementFromArray(USER_NAMES)
     });
   }
 
@@ -76,7 +80,7 @@ var createElement = function (photo) {
   return picture;
 };
 
-var addPictures = function (photos) {
+var renderPictures = function (photos) {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < PHOTOS_MAX_COUNT; i++) {
     fragment.appendChild(createElement(photos[i]));
@@ -86,4 +90,4 @@ var addPictures = function (photos) {
 
 var allPhotos = generatePhotos();
 
-addPictures(allPhotos);
+renderPictures(allPhotos);
