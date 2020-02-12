@@ -1,6 +1,6 @@
 'use strict';
 
-var LENGTH_ARRAY = 25;
+var PHOTOS_MAX_COUNT = 25;
 var MIN_LIKES = 15;
 var MAX_LIKES = 200;
 
@@ -38,52 +38,52 @@ var getMessage = function (messages) {
   return messages[getNumber(0, messages.length) - 1];
 };
 
-var getArrayComments = function (messages) {
-  var arrayComments = [];
+var generateComments = function (messages) {
+  var comments = [];
   for (var i = 0; i < NUMBER_COMMENTS; i++) {
-    arrayComments[i] = {
+    comments.push({
       avatar: 'img/avatar-' + getNumber(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR),
       message: getMessage(messages),
       name: USER_NAMES[getNumber(0, USER_NAMES.length) - 1]
-    };
+    });
   }
 
-  return arrayComments;
+  return comments;
 };
 
-var addArrayWithData = function () {
-  var dataArray = [];
+var generatePhotos = function () {
+  var infoPhotos = [];
 
-  for (var i = 0; i < LENGTH_ARRAY; i++) {
-    dataArray[i] = {
+  for (var i = 0; i < PHOTOS_MAX_COUNT; i++) {
+    infoPhotos.push({
       url: 'photos/' + (i + 1) + '.jpg',
       description: 'description photo',
       likes: getNumber(MIN_LIKES, MAX_LIKES),
-      comments: getArrayComments(USER_MESSAGES)
-    };
+      comments: generateComments(USER_MESSAGES)
+    });
   }
 
-  return dataArray;
+  return infoPhotos;
 };
 
-var createElement = function (dataPhoto) {
+var createElement = function (photo) {
   var picture = templatePicture.cloneNode(true);
 
-  picture.querySelector('.picture__img').setAttribute('src', dataPhoto.url);
-  picture.querySelector('.picture__likes').textContent = dataPhoto.likes;
-  picture.querySelector('.picture__comments').textContent = dataPhoto.comments.length;
+  picture.querySelector('.picture__img').setAttribute('src', photo.url);
+  picture.querySelector('.picture__likes').textContent = photo.likes;
+  picture.querySelector('.picture__comments').textContent = photo.comments.length;
 
   return picture;
 };
 
-var addPictures = function (arrayPhotos) {
+var addPictures = function (photos) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < LENGTH_ARRAY; i++) {
-    fragment.appendChild(createElement(arrayPhotos[i]));
+  for (var i = 0; i < PHOTOS_MAX_COUNT; i++) {
+    fragment.appendChild(createElement(photos[i]));
   }
   document.querySelector('.pictures').appendChild(fragment);
 };
 
-var dataArrayPhotos = addArrayWithData();
+var allPhotos = generatePhotos();
 
-addPictures(dataArrayPhotos);
+addPictures(allPhotos);
