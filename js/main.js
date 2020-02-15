@@ -94,8 +94,11 @@ renderPictures(allPhotos);
 
 // Личный проект: больше деталей (часть 2)
 
+var picture = document.querySelector('.big-picture');
+var commentTemplate = document.querySelector('.social__comment');
+
 var createComment = function (comment) {
-  var commentNode = document.querySelector('.social__comment').cloneNode(true);
+  var commentNode = commentTemplate.cloneNode(true);
 
   commentNode.querySelector('.social__picture')
     .setAttribute('src', comment.avatar);
@@ -113,20 +116,18 @@ var renderCommentsForPicture = function (comments) {
     fragmentComments.appendChild(createComment(comments[i]));
   }
 
-  document.querySelector('.social__comments').innerHTML = '';
-  document.querySelector('.social__comments').appendChild(fragmentComments);
+  picture.querySelector('.social__comments').innerHTML = '';
+  picture.querySelector('.social__comments').appendChild(fragmentComments);
 };
 
-var renderPicture = function (photo) {
-  var picture = document.querySelector('.big-picture');
-
+var renderBigPicture = function (photo) {
   picture.querySelector('.big-picture__img').setAttribute('src', photo.url);
   picture.querySelector('.likes-count').textContent = photo.likes;
   picture.querySelector('.comments-count').textContent = photo.comments.length;
 
   renderCommentsForPicture(photo.comments);
 
-  picture.querySelector('.social__caption').textContent = allPhotos[0].description;
+  picture.querySelector('.social__caption').textContent = photo.description;
 
   picture.classList.remove('hidden');
 };
@@ -134,4 +135,4 @@ var renderPicture = function (photo) {
 document.querySelector('.social__comment-count').classList.add('hidden');
 document.querySelector('.comments-loader').classList.add('hidden');
 document.body.classList.add('modal-open');
-renderPicture(allPhotos[0]);
+renderBigPicture(allPhotos[0]);
