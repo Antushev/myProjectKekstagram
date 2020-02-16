@@ -35,7 +35,7 @@ var getNumber = function (min, max) {
 };
 
 var getRandomElementFromArray = function (elements) {
-  return elements[getNumber(0, elements.length)];
+  return elements[getNumber(0, elements.length - 1)];
 };
 
 var getMessage = function (messages) {
@@ -46,7 +46,7 @@ var generateComments = function (messages) {
   var comments = [];
   for (var i = 0; i < NUMBER_COMMENTS; i++) {
     comments.push({
-      avatar: 'img/avatar-' + getNumber(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR),
+      avatar: 'img/avatar-' + getNumber(MIN_NUMBER_AVATAR, MAX_NUMBER_AVATAR) + '.svg',
       message: getMessage(messages),
       name: getRandomElementFromArray(USER_NAMES)
     });
@@ -91,3 +91,48 @@ var renderPictures = function (photos) {
 var allPhotos = generatePhotos();
 
 renderPictures(allPhotos);
+
+// Личный проект: больше деталей (часть 2)
+
+var picture = document.querySelector('.big-picture');
+var commentTemplate = document.querySelector('.social__comment');
+
+var createComment = function (comment) {
+  var commentNode = commentTemplate.cloneNode(true);
+
+  commentNode.querySelector('.social__picture')
+    .setAttribute('src', comment.avatar);
+  commentNode.querySelector('.social__picture')
+    .setAttribute('alt', comment.name);
+  commentNode.querySelector('.social__text').textContent = comment.message;
+
+  return commentNode;
+};
+
+var renderCommentsForPicture = function (comments) {
+  var fragmentComments = document.createDocumentFragment();
+
+  for (var i = 0; i < comments.length; i++) {
+    fragmentComments.appendChild(createComment(comments[i]));
+  }
+
+  picture.querySelector('.social__comments').innerHTML = '';
+  picture.querySelector('.social__comments').appendChild(fragmentComments);
+};
+
+var renderBigPicture = function (photo) {
+  picture.querySelector('.big-picture__img').setAttribute('src', photo.url);
+  picture.querySelector('.likes-count').textContent = photo.likes;
+  picture.querySelector('.comments-count').textContent = photo.comments.length;
+
+  renderCommentsForPicture(photo.comments);
+
+  picture.querySelector('.social__caption').textContent = photo.description;
+
+  picture.classList.remove('hidden');
+};
+
+document.querySelector('.social__comment-count').classList.add('hidden');
+document.querySelector('.comments-loader').classList.add('hidden');
+document.body.classList.add('modal-open');
+renderBigPicture(allPhotos[0]);
