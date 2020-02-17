@@ -30,6 +30,8 @@ var USER_NAMES = [
 
 var templatePicture = document.querySelector('#picture').content.querySelector('.picture');
 
+var Buttons = {ESCAPE_KEY: 'Escape', ENTER_KEY: 'Enter'};
+
 var getNumber = function (min, max) {
   return Math.floor(Math.ceil(Math.random() * (max - min)) + min);
 };
@@ -129,10 +131,69 @@ var renderBigPicture = function (photo) {
 
   picture.querySelector('.social__caption').textContent = photo.description;
 
-  picture.classList.remove('hidden');
+  // picture.classList.remove('hidden');
 };
 
 document.querySelector('.social__comment-count').classList.add('hidden');
 document.querySelector('.comments-loader').classList.add('hidden');
 document.body.classList.add('modal-open');
 renderBigPicture(allPhotos[0]);
+
+// Личный проект: доверяй, но проверяй (часть 1)
+
+var EFFECT_LINE_TOTAL_WIDTH = document.querySelector('.effect-level__line').clientWidth;
+
+var picturePreviewOpen = document.querySelector('#upload-file');
+var picturePreviewClose = document.querySelector('#upload-cancel');
+var picturePreviewForm = document.querySelector('.img-upload__overlay');
+
+var picturePreview = document.querySelector('.img-upload__preview img');
+var effectsList = document.querySelector('.effects__list');
+var pinEffectLevel = document.querySelector('.effect-level__pin');
+var inputEffectValue;
+var inputEffectLevel = document.querySelector('.img-upload__effect-level');
+
+var effectLevelDepth = document.querySelector('.effect-level__depth');
+
+picturePreviewOpen.addEventListener('change', function () {
+  picturePreview.value = '';
+  picturePreviewForm.classList.remove('hidden');
+
+  document.addEventListener('keydown', function (evt) {
+    if (evt.key === Buttons.ESCAPE_KEY) {
+      picturePreviewForm.classList.add('hidden');
+    }
+  });
+});
+
+picturePreviewClose.addEventListener('click', function () {
+  picturePreviewForm.classList.add('hidden');
+});
+
+effectsList.addEventListener('click', function (evt) {
+  if (evt.target.tagName === 'INPUT') {
+    inputEffectValue = evt.target.value;
+    picturePreview.classList = '';
+    picturePreview.classList.add('effects__preview--' + inputEffectValue);
+  }
+});
+
+pinEffectLevel.addEventListener('mouseup', function () {
+  var effectLineWidth = effectLevelDepth.clientWidth;
+  var effectDepth = effectLineWidth / EFFECT_LINE_TOTAL_WIDTH;
+  inputEffectLevel.value = effectDepth;
+  if (inputEffectValue === 'chrome') {
+    picturePreview.style.filter = 'grayscale(' + effectDepth + ')';
+  } else if (inputEffectValue === 'sepia') {
+    picturePreview.style.filter = 'sepia(' + effectDepth + ')';
+  } else if (inputEffectValue === 'marvin') {
+    picturePreview.style.filter = 'invert(' + effectDepth * 100 + ')';
+  } else if (inputEffectValue === 'phobos') {
+    picturePreview.style.filter = 'blur(' + effectDepth * 3 + 'px)';
+  } else if (inputEffectValue === 'heat') {
+    picturePreview.style.filter = 'brightness(' + effectDepth * 3 + ')';
+  } else if (inputEffectValue === 'none') {
+    picturePreview.style.filter = '';
+  }
+});
+
