@@ -141,8 +141,7 @@ renderBigPicture(allPhotos[0]);
 
 // Личный проект: доверяй, но проверяй (часть 1)
 
-var EFFECT_LINE_TOTAL_WIDTH = document.querySelector('.effect-level__line').clientWidth;
-
+// Эффекты
 var picturePreviewOpen = document.querySelector('#upload-file');
 var picturePreviewClose = document.querySelector('#upload-cancel');
 var picturePreviewForm = document.querySelector('.img-upload__overlay');
@@ -151,23 +150,29 @@ var picturePreview = document.querySelector('.img-upload__preview img');
 var effectsList = document.querySelector('.effects__list');
 var pinEffectLevel = document.querySelector('.effect-level__pin');
 var inputEffectValue;
-var inputEffectLevel = document.querySelector('.img-upload__effect-level');
+var inputEffectLevel = document.querySelector('.effect-level__value');
 
 var effectLevelDepth = document.querySelector('.effect-level__depth');
 
-picturePreviewOpen.addEventListener('change', function () {
-  picturePreview.value = '';
-  picturePreviewForm.classList.remove('hidden');
-
+var onButtonEscapeDown = function () {
   document.addEventListener('keydown', function (evt) {
+    picturePreviewOpen.value = '';
     if (evt.key === Buttons.ESCAPE_KEY) {
       picturePreviewForm.classList.add('hidden');
     }
   });
+};
+
+picturePreviewOpen.addEventListener('change', function () {
+  picturePreviewForm.classList.remove('hidden');
+
+  document.addEventListener('keydown', onButtonEscapeDown);
 });
 
 picturePreviewClose.addEventListener('click', function () {
+  picturePreviewOpen.value = '';
   picturePreviewForm.classList.add('hidden');
+  document.removeEventListener('keydown', onButtonEscapeDown);
 });
 
 effectsList.addEventListener('click', function (evt) {
@@ -175,25 +180,82 @@ effectsList.addEventListener('click', function (evt) {
     inputEffectValue = evt.target.value;
     picturePreview.classList = '';
     picturePreview.classList.add('effects__preview--' + inputEffectValue);
+    picturePreview.style = '';
   }
 });
 
 pinEffectLevel.addEventListener('mouseup', function () {
   var effectLineWidth = effectLevelDepth.clientWidth;
-  var effectDepth = effectLineWidth / EFFECT_LINE_TOTAL_WIDTH;
-  inputEffectLevel.value = effectDepth;
+  var effectLineTotal = document.querySelector('.effect-level__line').clientWidth;
+  var effectDepth = effectLineWidth / effectLineTotal;
   if (inputEffectValue === 'chrome') {
+    inputEffectLevel.value = effectDepth;
     picturePreview.style.filter = 'grayscale(' + effectDepth + ')';
   } else if (inputEffectValue === 'sepia') {
+    inputEffectLevel.value = effectDepth;
     picturePreview.style.filter = 'sepia(' + effectDepth + ')';
   } else if (inputEffectValue === 'marvin') {
-    picturePreview.style.filter = 'invert(' + effectDepth * 100 + ')';
+    effectDepth = effectDepth * 100;
+    inputEffectLevel.value = effectDepth;
+    picturePreview.style.filter = 'invert(' + effectDepth + '%)';
   } else if (inputEffectValue === 'phobos') {
+    effectDepth = effectDepth * 3;
+    inputEffectLevel.value = effectDepth;
     picturePreview.style.filter = 'blur(' + effectDepth * 3 + 'px)';
   } else if (inputEffectValue === 'heat') {
+    effectDepth = effectDepth * 3;
+    inputEffectLevel.value = effectDepth;
     picturePreview.style.filter = 'brightness(' + effectDepth * 3 + ')';
   } else if (inputEffectValue === 'none') {
     picturePreview.style.filter = '';
   }
 });
+
+// Масштабирование
+var SCALE_STEP = 25;
+var SCALE_MIN = 25;
+var SCALE_MAX = 100;
+
+var scaleControlSmaller = picturePreviewForm.querySelector('.scale__control--smaller');
+var scaleControlBigger = picturePreviewForm.querySelector('.scale__control--bigger');
+var scaleValue = picturePreviewForm.querySelector('.scale__control--value');
+
+var scaleBiggerPicture = function () {
+  var scale = Number(scaleValue.value);
+  if (scale < SCALE_MAX) {
+    scale = scale + SCALE_STEP;
+    scaleValue.value = scale;
+    picturePreview.style.transform = 'scale(' + scale / 100 + ')';
+  }
+};
+
+var scaleSmallerPicture = function () {
+  var scale = Number(scaleValue.value);
+  if (scale > SCALE_MIN) {
+    scale = scale - SCALE_STEP;
+    scaleValue.value = scale;
+    picturePreview.style.transform = 'scale(' + scale / 100 + ')';
+  }
+};
+
+scaleControlSmaller.addEventListener('click', function () {
+  scaleSmallerPicture();
+});
+
+scaleControlBigger.addEventListener('click', function () {
+  scaleBiggerPicture();
+});
+
+// Валидация формы с хеш-тегами
+
+var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
+var textHashtag = inputHashtag.value;
+var hashtags = textHashtag.split(' ');
+
+inputHashtag.validity.valid = false;
+
+inputHashtag.addEventListener('invalid', function () {
+  inputHashtag.setCustomValidity('Неправильно написаны хеш-теги');
+});
+
 
