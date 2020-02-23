@@ -136,7 +136,6 @@ var renderBigPicture = function (photo) {
 
 document.querySelector('.social__comment-count').classList.add('hidden');
 document.querySelector('.comments-loader').classList.add('hidden');
-document.body.classList.add('modal-open');
 renderBigPicture(allPhotos[0]);
 
 // Личный проект: доверяй, но проверяй (часть 1)
@@ -154,17 +153,24 @@ var inputEffectLevel = document.querySelector('.effect-level__value');
 
 var effectLevelDepth = document.querySelector('.effect-level__depth');
 
+var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
+var textareaCommentPreview = picturePreviewForm.querySelector('.text__description');
+
 var onButtonEscapeDown = function () {
   document.addEventListener('keydown', function (evt) {
     picturePreviewOpen.value = '';
-    if (evt.key === Buttons.ESCAPE_KEY) {
+    if (evt.key === Buttons.ESCAPE_KEY
+      && evt.target !== inputHashtag
+      && evt.target !== textareaCommentPreview) {
       picturePreviewForm.classList.add('hidden');
+      document.body.classList.remove('modal-open');
     }
   });
 };
 
 picturePreviewOpen.addEventListener('change', function () {
   picturePreviewForm.classList.remove('hidden');
+  document.body.classList.add('modal-open');
 
   document.addEventListener('keydown', onButtonEscapeDown);
 });
@@ -172,6 +178,7 @@ picturePreviewOpen.addEventListener('change', function () {
 picturePreviewClose.addEventListener('click', function () {
   picturePreviewOpen.value = '';
   picturePreviewForm.classList.add('hidden');
+  document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onButtonEscapeDown);
 });
 
@@ -184,31 +191,36 @@ effectsList.addEventListener('click', function (evt) {
   }
 });
 
-pinEffectLevel.addEventListener('mouseup', function () {
+var getEffectDepth = function () {
   var effectLineWidth = effectLevelDepth.clientWidth;
   var effectLineTotal = document.querySelector('.effect-level__line').clientWidth;
-  var effectDepth = effectLineWidth / effectLineTotal;
+  return effectLineWidth / effectLineTotal;
+};
+
+var applyEffect = function (depth) {
   if (inputEffectValue === 'chrome') {
-    inputEffectLevel.value = effectDepth;
-    picturePreview.style.filter = 'grayscale(' + effectDepth + ')';
+    inputEffectLevel.value = depth;
+    picturePreview.style.filter = 'grayscale(' + depth + ')';
   } else if (inputEffectValue === 'sepia') {
-    inputEffectLevel.value = effectDepth;
-    picturePreview.style.filter = 'sepia(' + effectDepth + ')';
+    inputEffectLevel.value = depth;
+    picturePreview.style.filter = 'sepia(' + depth + ')';
   } else if (inputEffectValue === 'marvin') {
-    effectDepth = effectDepth * 100;
-    inputEffectLevel.value = effectDepth;
-    picturePreview.style.filter = 'invert(' + effectDepth + '%)';
+    inputEffectLevel.value = depth * 100;
+    picturePreview.style.filter = 'invert(' + depth * 100 + '%)';
   } else if (inputEffectValue === 'phobos') {
-    effectDepth = effectDepth * 3;
-    inputEffectLevel.value = effectDepth;
-    picturePreview.style.filter = 'blur(' + effectDepth * 3 + 'px)';
+    inputEffectLevel.value = depth * 3;
+    picturePreview.style.filter = 'blur(' + depth * 3 + 'px)';
   } else if (inputEffectValue === 'heat') {
-    effectDepth = effectDepth * 3;
-    inputEffectLevel.value = effectDepth;
-    picturePreview.style.filter = 'brightness(' + effectDepth * 3 + ')';
+    inputEffectLevel.value = depth * 3;
+    picturePreview.style.filter = 'brightness(' + depth * 3 + ')';
   } else if (inputEffectValue === 'none') {
     picturePreview.style.filter = '';
   }
+};
+
+pinEffectLevel.addEventListener('mouseup', function () {
+  var effectDepth = getEffectDepth();
+  applyEffect(effectDepth);
 });
 
 // Масштабирование
@@ -248,14 +260,39 @@ scaleControlBigger.addEventListener('click', function () {
 
 // Валидация формы с хеш-тегами
 
-var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
-var textHashtag = inputHashtag.value;
-var hashtags = textHashtag.split(' ');
+var searchSameHashtags = function (hashtags) {
+  for (var i = 0; i < hashtags.length - 1; i++) {
+    for (var j = i + 1; j < hashtags.length; j++) {
+      if (hashtags[i] === hashtags[j]) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
 
-inputHashtag.validity.valid = false;
+var validityInputHashtags = function (hashtagsText) {
+  var hashtags = hashtagsText.toLowerCase().trim().split(' ');
+  var regular = /^#[А-Яа-яЁёA-Za-z0-9]{1,20}$/;
+  for (var i = 0; i < hashtags.length; i++) {
+    var hashtag = hashtags[i].trim();
+    if (hashtag.searsch(regular) === -1 && hashtag !== '') {
+      return inputHashtag.setCustomValidity('Хеш-тег ' + hashtag + ' записан неверно!');
+    }
 
-inputHashtag.addEventListener('invalid', function () {
-  inputHashtag.setCustomValidity('Неправильно написаны хеш-теги');
+    if (searchSameHashtags(hashtags)) {
+      return inputHashtag.setCustomValidity('Повторяющихся хеш-тегов быть не должно!');
+    }
+
+    if (hashtags.length > 5) {
+      return inputHashtag.setCustomValidity('Нельзя указывать больше 5 хеш-тегов!');
+    }
+  }
+
+  return inputHashtag.setCustomValidity('');
+};
+
+inputHashtag.addEventListener('input', function () {
+  var hashtagsText = inputHashtag.value;
+  validityInputHashtags(hashtagsText);
 });
-
-
