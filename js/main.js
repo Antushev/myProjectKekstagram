@@ -156,6 +156,33 @@ var effectLevelDepth = document.querySelector('.effect-level__depth');
 var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
 var textareaCommentPreview = picturePreviewForm.querySelector('.text__description');
 
+var EffectsDepthHandlers = {
+  'chrome': function (depth) {
+    inputEffectLevel.value = depth;
+    return 'grayscale(' + depth + ')';
+  },
+  'sepia': function (depth) {
+    inputEffectLevel.value = depth;
+    return 'sepia(' + depth + ')';
+  },
+  'marvin': function (depth) {
+    inputEffectLevel.value = depth * 100;
+    return 'invert(' + depth * 100 + '%)';
+  },
+  'phobos': function (depth) {
+    inputEffectLevel.value = depth * 3;
+    return 'blur(' + depth * 3 + 'px)';
+  },
+  'heat': function (depth) {
+    inputEffectLevel.value = depth * 3;
+    return 'brightness(' + depth * 3 + ')';
+  },
+  'none': function () {
+    inputEffectLevel.value = 0;
+    return '';
+  }
+};
+
 var onButtonEscapeDown = function () {
   document.addEventListener('keydown', function (evt) {
     picturePreviewOpen.value = '';
@@ -198,24 +225,8 @@ var getEffectDepth = function () {
 };
 
 var applyEffect = function (depth) {
-  if (inputEffectValue === 'chrome') {
-    inputEffectLevel.value = depth;
-    picturePreview.style.filter = 'grayscale(' + depth + ')';
-  } else if (inputEffectValue === 'sepia') {
-    inputEffectLevel.value = depth;
-    picturePreview.style.filter = 'sepia(' + depth + ')';
-  } else if (inputEffectValue === 'marvin') {
-    inputEffectLevel.value = depth * 100;
-    picturePreview.style.filter = 'invert(' + depth * 100 + '%)';
-  } else if (inputEffectValue === 'phobos') {
-    inputEffectLevel.value = depth * 3;
-    picturePreview.style.filter = 'blur(' + depth * 3 + 'px)';
-  } else if (inputEffectValue === 'heat') {
-    inputEffectLevel.value = depth * 3;
-    picturePreview.style.filter = 'brightness(' + depth * 3 + ')';
-  } else if (inputEffectValue === 'none') {
-    picturePreview.style.filter = '';
-  }
+  var handler = EffectsDepthHandlers[inputEffectValue];
+  picturePreview.style.filter = handler(depth);
 };
 
 pinEffectLevel.addEventListener('mouseup', function () {
@@ -227,48 +238,42 @@ pinEffectLevel.addEventListener('mouseup', function () {
 var SCALE_STEP = 25;
 var SCALE_MIN = 25;
 var SCALE_MAX = 100;
+var MAX_HASHTAGS = 5;
 
 var scaleControlSmaller = picturePreviewForm.querySelector('.scale__control--smaller');
 var scaleControlBigger = picturePreviewForm.querySelector('.scale__control--bigger');
 var scaleValue = picturePreviewForm.querySelector('.scale__control--value');
 
-var scaleBiggerPicture = function () {
+var scalePicture = function (isScale) {
   var scale = Number(scaleValue.value);
-  if (scale < SCALE_MAX) {
+
+  if (isScale && scale < SCALE_MAX) {
     scale = scale + SCALE_STEP;
-    scaleValue.value = scale;
-    picturePreview.style.transform = 'scale(' + scale / 100 + ')';
   }
-};
-
-var scaleSmallerPicture = function () {
-  var scale = Number(scaleValue.value);
-  if (scale > SCALE_MIN) {
+  if (!isScale && scale > SCALE_MIN) {
     scale = scale - SCALE_STEP;
-    scaleValue.value = scale;
-    picturePreview.style.transform = 'scale(' + scale / 100 + ')';
   }
-};
 
-scaleControlSmaller.addEventListener('click', function () {
-  scaleSmallerPicture();
-});
+  scaleValue.value = scale;
+  picturePreview.style.transform = 'scale(' + scale / 100 + ')';
+};
 
 scaleControlBigger.addEventListener('click', function () {
-  scaleBiggerPicture();
+  var isScale = true;
+  scalePicture(isScale);
+});
+
+scaleControlSmaller.addEventListener('click', function () {
+  var isScale = false;
+  scalePicture(isScale);
 });
 
 // Валидация формы с хеш-тегами
 
 var searchSameHashtags = function (hashtags) {
-  for (var i = 0; i < hashtags.length - 1; i++) {
-    for (var j = i + 1; j < hashtags.length; j++) {
-      if (hashtags[i] === hashtags[j]) {
-        return true;
-      }
-    }
-  }
-  return false;
+  hashtags.findIndex(function (item, index) {
+    //
+  });
 };
 
 var validityInputHashtags = function (hashtagsText) {
@@ -276,15 +281,15 @@ var validityInputHashtags = function (hashtagsText) {
   var regular = /^#[А-Яа-яЁёA-Za-z0-9]{1,20}$/;
   for (var i = 0; i < hashtags.length; i++) {
     var hashtag = hashtags[i].trim();
-    if (hashtag.searsch(regular) === -1 && hashtag !== '') {
+    if (hashtag.search(regular) === -1 && hashtag !== '') {
       return inputHashtag.setCustomValidity('Хеш-тег ' + hashtag + ' записан неверно!');
     }
 
-    if (searchSameHashtags(hashtags)) {
+    if (searchSameHashtags(hashtags) !== -1) {
       return inputHashtag.setCustomValidity('Повторяющихся хеш-тегов быть не должно!');
     }
 
-    if (hashtags.length > 5) {
+    if (hashtags.length > MAX_HASHTAGS) {
       return inputHashtag.setCustomValidity('Нельзя указывать больше 5 хеш-тегов!');
     }
   }
