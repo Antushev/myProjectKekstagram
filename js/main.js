@@ -271,9 +271,15 @@ scaleControlSmaller.addEventListener('click', function () {
 // Валидация формы с хеш-тегами
 
 var searchSameHashtags = function (hashtags) {
-  hashtags.findIndex(function (item, index) {
-    //
-  });
+  var sameElements = {};
+  for (var i = 0; i < hashtags.length; i++) {
+    if (sameElements.hasOwnProperty(hashtags[i])) {
+      return true;
+    } else {
+      sameElements[hashtags[i]] = '';
+    }
+  }
+  return false;
 };
 
 var validityInputHashtags = function (hashtagsText) {
@@ -285,7 +291,7 @@ var validityInputHashtags = function (hashtagsText) {
       return inputHashtag.setCustomValidity('Хеш-тег ' + hashtag + ' записан неверно!');
     }
 
-    if (searchSameHashtags(hashtags) !== -1) {
+    if (searchSameHashtags(hashtags)) {
       return inputHashtag.setCustomValidity('Повторяющихся хеш-тегов быть не должно!');
     }
 
