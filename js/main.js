@@ -273,10 +273,8 @@ scaleControlSmaller.addEventListener('click', function () {
 var searchSameHashtags = function (hashtags) {
   var sameElements = {};
   for (var i = 0; i < hashtags.length; i++) {
-    if (sameElements.hasOwnProperty(hashtags[i])) {
+    if (sameElements[hashtags[i]]) {
       return true;
-    } else {
-      sameElements[hashtags[i]] = '';
     }
   }
   return false;
