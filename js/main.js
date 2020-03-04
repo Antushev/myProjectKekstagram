@@ -335,9 +335,9 @@ var removeEventKeyBigPicture = function () {
 
 var onButtonPictureOpenEnterDown = function (evt) {
   if (evt.key === Buttons.ENTER_KEY && evt.target.classList.contains('picture')) {
-    openBigPicture(allPhotos[evt.target
-      .querySelector('.picture__img')
-      .getAttribute('data-id')]);
+    var infoBigPicture = allPhotos[evt.target.querySelector('.picture__img')
+      .getAttribute('data-id')];
+    openBigPicture(infoBigPicture);
 
     addEventKeyBigPicture();
   }
@@ -353,8 +353,9 @@ var onButtonPictureCloseEnterDown = function (evt) {
 
 pictureContainer.addEventListener('click', function (evt) {
   if (evt.target.classList.contains('picture__img')) {
-    openBigPicture(allPhotos[evt.target
-      .getAttribute('data-id')]);
+    var infoBigPicture = allPhotos[evt.target
+      .getAttribute('data-id')];
+    openBigPicture(infoBigPicture);
 
     addEventKeyBigPicture();
   }
