@@ -6,6 +6,8 @@
   var SCALE_MAX = 100;
   var MAX_HASHTAGS = 5;
 
+  var MAX_DEPTH_WIDTH = 453;
+
   var picturePreviewOpen = document.querySelector('#upload-file');
   var picturePreviewClose = document.querySelector('#upload-cancel');
   var picturePreviewForm = document.querySelector('.img-upload__overlay');
@@ -16,6 +18,7 @@
   var inputEffectValue;
   var inputEffectLevel = document.querySelector('.effect-level__value');
 
+  var effectLineTotal = document.querySelector('.effect-level__line');
   var effectLevelDepth = document.querySelector('.effect-level__depth');
 
   var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
@@ -80,13 +83,15 @@
       picturePreview.classList = '';
       picturePreview.classList.add('effects__preview--' + inputEffectValue);
       picturePreview.style = '';
+      pinEffectLevel.style.left = '100%';
+      effectLevelDepth.style.width = '100%';
     }
   });
 
   var getEffectDepth = function () {
+    var effectTotalWidth = effectLineTotal.clientWidth;
     var effectLineWidth = effectLevelDepth.clientWidth;
-    var effectLineTotal = document.querySelector('.effect-level__line').clientWidth;
-    return effectLineWidth / effectLineTotal;
+    return effectLineWidth / effectTotalWidth;
   };
 
   var applyEffect = function (depth) {
@@ -94,9 +99,36 @@
     picturePreview.style.filter = handler(depth);
   };
 
-  pinEffectLevel.addEventListener('mouseup', function () {
-    var effectDepth = getEffectDepth();
-    applyEffect(effectDepth);
+  pinEffectLevel.addEventListener('mousedown', function (evt) {
+    var startCoords = {
+      x: evt.clientX
+    };
+
+    var onMouseMove = function (moveEvt) {
+      var shift = {
+        x: startCoords.x - moveEvt.clientX
+      };
+
+      startCoords = {
+        x: moveEvt.clientX
+      };
+
+      var depth = getEffectDepth();
+      var effectDepthWidth = effectLevelDepth.clientWidth;
+      if (effectDepthWidth - shift.x > 0 && effectDepthWidth - shift.x <= MAX_DEPTH_WIDTH) {
+        pinEffectLevel.style.left = (pinEffectLevel.offsetLeft - shift.x) + 'px';
+        effectLevelDepth.style.width = (pinEffectLevel.offsetLeft - shift.x) + 'px';
+        applyEffect(depth);
+      }
+    };
+
+    var onMouseUp = function () {
+      pinEffectLevel.removeEventListener('mousemove', onMouseMove);
+      pinEffectLevel.removeEventListener('mouseup', onMouseUp);
+    };
+
+    pinEffectLevel.addEventListener('mousemove', onMouseMove);
+    pinEffectLevel.addEventListener('mouseup', onMouseUp);
   });
 
   var scaleControlSmaller = picturePreviewForm.querySelector('.scale__control--smaller');
