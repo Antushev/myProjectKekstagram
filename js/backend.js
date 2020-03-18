@@ -9,7 +9,9 @@
     OK: 200
   };
 
-  var settingXhr = function (xhr, onLoad, onError, timeout, responseType) {
+  var xhr = new XMLHttpRequest();
+
+  var makeRequest = function (xhrObject, method, url, onLoad, onError, timeout, responseType) {
     xhr.timeout = timeout;
     xhr.responseType = responseType;
 
@@ -28,14 +30,13 @@
     xhr.addEventListener('timeout', function () {
       onError('Превышено время ожидания ответа сервера');
     });
-  };
-
-  var load = function (onLoad, onError) {
-    var xhr = new XMLHttpRequest();
-    settingXhr(xhr, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
 
     xhr.open('GET', URL_GET);
     xhr.send();
+  };
+
+  var load = function (onLoad, onError) {
+    makeRequest(xhr, 'GET', URL_GET, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
   };
 
   window.backend = {
