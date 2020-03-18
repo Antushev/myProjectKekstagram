@@ -1398,6 +1398,20 @@ main {
           transform: translateX(-50%);
 }
 
+.error-server {
+  position: absolute;
+  top: 0; right: 0; left: 0;
+
+  max-height: 30px;
+
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  line-height: 0;
+
+  background-color: #f00;
+}
+
 
 /* Адаптивности чуток
    ========================================================================== */
