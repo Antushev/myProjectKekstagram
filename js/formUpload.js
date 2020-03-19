@@ -8,9 +8,22 @@
 
   var MAX_DEPTH_WIDTH = 453;
 
+  var mainContent = document.querySelector('main');
+  var templateSuccess = document.querySelector('#success').content.querySelector('.success');
+  var templateError = document.querySelector('#error').content.querySelector('.error');
+  var errorInner = templateError.querySelector('.error__inner');
+  var successInner = templateSuccess.querySelector('.success__inner');
+  var buttonCloseSuccess = templateSuccess.querySelector('.success__button');
+  var buttonCloseError = templateError.querySelector('.error__button');
+  templateSuccess.classList.add('visually-hidden');
+  templateError.classList.add('visually-hidden');
+  mainContent.prepend(templateSuccess);
+  mainContent.prepend(templateError);
+
   var picturePreviewOpen = document.querySelector('#upload-file');
   var picturePreviewClose = document.querySelector('#upload-cancel');
   var picturePreviewForm = document.querySelector('.img-upload__overlay');
+  var formUpload = document.querySelector('.img-upload__form');
 
   var picturePreview = document.querySelector('.img-upload__preview img');
   var effectsList = document.querySelector('.effects__list');
@@ -23,6 +36,7 @@
 
   var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
   var textareaCommentPreview = picturePreviewForm.querySelector('.text__description');
+  var inputImg = formUpload.querySelector('.img-upload__input');
 
   var EffectsDepthHandlers = {
     'chrome': function (depth) {
@@ -48,7 +62,21 @@
     'none': function () {
       inputEffectLevel.value = 0;
       return '';
+    },
+    'undefined': function () {
+      inputEffectLevel.value = 0;
+      return '';
     }
+  };
+
+  var resetForm = function () {
+    scaleValue.value = 100;
+    picturePreview.classList = '';
+    picturePreview.style.transform = 'scale(1)';
+    applyEffect('none');
+    inputHashtag.value = '';
+    textareaCommentPreview.value = '';
+    inputImg.value = '';
   };
 
   var onButtonEscapeDown = function () {
@@ -59,6 +87,7 @@
         && evt.target !== textareaCommentPreview) {
         picturePreviewForm.classList.add('hidden');
         document.body.classList.remove('modal-open');
+        resetForm();
       }
     });
   };
@@ -75,6 +104,7 @@
     picturePreviewForm.classList.add('hidden');
     document.body.classList.remove('modal-open');
     document.removeEventListener('keydown', onButtonEscapeDown);
+    resetForm();
   });
 
   effectsList.addEventListener('click', function (evt) {
@@ -193,5 +223,76 @@
   inputHashtag.addEventListener('input', function () {
     var hashtagsText = inputHashtag.value;
     validityInputHashtags(hashtagsText);
+  });
+
+  var onLoad = function () {
+    picturePreviewForm.classList.add('hidden');
+    openSuccessWindow();
+    resetForm();
+  };
+
+  var onError = function () {
+    picturePreviewForm.classList.add('hidden');
+    openErrorWindow();
+    resetForm();
+  };
+
+  formUpload.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.send(new FormData(formUpload), onLoad, onError);
+  });
+
+  var onEscapeDownSuccessWindow = function () {
+    document.addEventListener('keydown', function (evt) {
+      if (evt.key === window.utils.Buttons.ESCAPE_KEY) {
+        templateSuccess.classList.add('visually-hidden');
+      }
+    });
+  };
+
+  var onEscapeDownErrorWindow = function () {
+    document.addEventListener('keydown', function (evt) {
+      if (evt.key === window.utils.Buttons.ESCAPE_KEY) {
+        templateError.classList.add('visually-hidden');
+      }
+    });
+  };
+
+  var openSuccessWindow = function () {
+    templateSuccess.classList.remove('visually-hidden');
+    document.addEventListener('keydown', onEscapeDownSuccessWindow);
+  };
+
+  var openErrorWindow = function () {
+    templateError.classList.remove('visually-hidden');
+    document.addEventListener('keydown', onEscapeDownErrorWindow);
+  };
+
+  var closeSuccessWindow = function () {
+    templateSuccess.classList.add('visually-hidden');
+    document.removeEventListener(onEscapeDownSuccessWindow);
+  };
+
+  var closeErrorWindow = function () {
+    templateError.classList.add('visually-hidden');
+    document.removeEventListener('keydown', onEscapeDownErrorWindow);
+  };
+
+  buttonCloseSuccess.addEventListener('click', function () {
+    closeSuccessWindow();
+  });
+
+  buttonCloseError.addEventListener('click', function () {
+    closeErrorWindow();
+  });
+
+  window.addEventListener('click', function (evt) {
+    if (evt.target !== errorInner) {
+      closeErrorWindow();
+    }
+
+    if (evt.target !== successInner) {
+      closeSuccessWindow();
+    }
   });
 })();

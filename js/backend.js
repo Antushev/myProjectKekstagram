@@ -4,43 +4,54 @@
   var TIMEOUT_MAX = 10000;
   var RESPONSE_TYPE = 'json';
   var URL_GET = 'https://js.dump.academy/kekstagram/data';
+  var URL_POST = 'https://js.dump.academy/kekstagram';
 
   var StatusCode = {
     OK: 200
   };
 
-  var settingXhr = function (xhr, onLoad, onError, timeout, responseType) {
-    xhr.timeout = timeout;
-    xhr.responseType = responseType;
+  var makeRequest = function (xhrObject, method, url, data, onLoad, onError, timeout, responseType) {
+    xhrObject.timeout = timeout;
+    xhrObject.responseType = responseType;
 
-    xhr.addEventListener('load', function () {
-      if (xhr.status === StatusCode.OK) {
-        onLoad(xhr.response);
+    xhrObject.addEventListener('load', function () {
+      if (xhrObject.status === StatusCode.OK) {
+        onLoad(xhrObject.response);
       } else {
-        onError('Ответ сервера: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Ответ сервера: ' + xhrObject.status + ' ' + xhrObject.statusText);
       }
     });
 
-    xhr.addEventListener('error', function () {
+    xhrObject.addEventListener('error', function () {
       onError('Во время запроса к серверу произошла ошибка');
     });
 
-    xhr.addEventListener('timeout', function () {
+    xhrObject.addEventListener('timeout', function () {
       onError('Превышено время ожидания ответа сервера');
     });
+
+    xhrObject.open(method, url);
+
+    if (data !== false) {
+      xhrObject.send(data);
+    } else {
+      xhrObject.send();
+    }
   };
 
   var load = function (onLoad, onError) {
-    var xhr = new XMLHttpRequest();
-    settingXhr(xhr, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
+    var data = false;
+    var xhrLoad = new XMLHttpRequest();
+    makeRequest(xhrLoad, 'GET', URL_GET, data, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
+  };
 
-    xhr.open('GET', URL_GET);
-    xhr.send();
+  var send = function (data, onLoad, onError) {
+    var xhrSend = new XMLHttpRequest();
+    makeRequest(xhrSend, 'POST', URL_POST, data, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
   };
 
   window.backend = {
-    load: load
+    load: load,
+    send: send
   };
 })();
-
-
