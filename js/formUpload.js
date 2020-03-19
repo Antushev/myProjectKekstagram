@@ -24,6 +24,7 @@
   var picturePreviewClose = document.querySelector('#upload-cancel');
   var picturePreviewForm = document.querySelector('.img-upload__overlay');
   var formUpload = document.querySelector('.img-upload__form');
+  var buttonFormUpload = formUpload.querySelector('.img-upload__submit');
 
   var picturePreview = document.querySelector('.img-upload__preview img');
   var effectsList = document.querySelector('.effects__list');
@@ -227,18 +228,21 @@
 
   var onLoad = function () {
     picturePreviewForm.classList.add('hidden');
+    buttonFormUpload.textContent = 'Отправить';
     openSuccessWindow();
     resetForm();
   };
 
   var onError = function () {
     picturePreviewForm.classList.add('hidden');
+    buttonFormUpload.textContent = 'Отправить';
     openErrorWindow();
     resetForm();
   };
 
   formUpload.addEventListener('submit', function (evt) {
     evt.preventDefault();
+    buttonFormUpload.textContent = 'Загрузка...';
     window.backend.send(new FormData(formUpload), onLoad, onError);
   });
 
