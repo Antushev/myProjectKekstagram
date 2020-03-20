@@ -8,6 +8,9 @@
 
   var MAX_DEPTH_WIDTH = 453;
 
+  var TEXT_DEFAULT_BUTTON = 'Отправить';
+  var TEXT_SEND_BUTTON = 'Загрузка...';
+
   var mainContent = document.querySelector('main');
   var templateSuccess = document.querySelector('#success').content.querySelector('.success');
   var templateError = document.querySelector('#error').content.querySelector('.error');
@@ -29,7 +32,7 @@
   var picturePreview = document.querySelector('.img-upload__preview img');
   var effectsList = document.querySelector('.effects__list');
   var pinEffectLevel = document.querySelector('.effect-level__pin');
-  var inputEffectValue;
+  var inputEffectValue = 'none';
   var inputEffectLevel = document.querySelector('.effect-level__value');
 
   var effectLineTotal = document.querySelector('.effect-level__line');
@@ -37,7 +40,6 @@
 
   var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
   var textareaCommentPreview = picturePreviewForm.querySelector('.text__description');
-  var inputImg = formUpload.querySelector('.img-upload__input');
 
   var EffectsDepthHandlers = {
     'chrome': function (depth) {
@@ -63,21 +65,13 @@
     'none': function () {
       inputEffectLevel.value = 0;
       return '';
-    },
-    'undefined': function () {
-      inputEffectLevel.value = 0;
-      return '';
     }
   };
 
   var resetForm = function () {
-    scaleValue.value = 100;
     picturePreview.classList = '';
     picturePreview.style.transform = 'scale(1)';
-    applyEffect('none');
-    inputHashtag.value = '';
-    textareaCommentPreview.value = '';
-    inputImg.value = '';
+    formUpload.reset();
   };
 
   var onButtonEscapeDown = function () {
@@ -110,6 +104,7 @@
 
   effectsList.addEventListener('click', function (evt) {
     if (evt.target.tagName === 'INPUT') {
+      scaleValue.value = 100;
       inputEffectValue = evt.target.value;
       picturePreview.classList = '';
       picturePreview.classList.add('effects__preview--' + inputEffectValue);
@@ -228,21 +223,21 @@
 
   var onLoad = function () {
     picturePreviewForm.classList.add('hidden');
-    buttonFormUpload.textContent = 'Отправить';
+    buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
     openSuccessWindow();
     resetForm();
   };
 
   var onError = function () {
     picturePreviewForm.classList.add('hidden');
-    buttonFormUpload.textContent = 'Отправить';
+    buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
     openErrorWindow();
     resetForm();
   };
 
   formUpload.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    buttonFormUpload.textContent = 'Загрузка...';
+    buttonFormUpload.textContent = TEXT_SEND_BUTTON;
     window.backend.send(new FormData(formUpload), onLoad, onError);
   });
 
@@ -274,7 +269,7 @@
 
   var closeSuccessWindow = function () {
     templateSuccess.classList.add('visually-hidden');
-    document.removeEventListener(onEscapeDownSuccessWindow);
+    document.removeEventListener('keydown', onEscapeDownSuccessWindow);
   };
 
   var closeErrorWindow = function () {
@@ -291,11 +286,8 @@
   });
 
   window.addEventListener('click', function (evt) {
-    if (evt.target !== errorInner) {
+    if (evt.target !== errorInner || evt.target !== successInner) {
       closeErrorWindow();
-    }
-
-    if (evt.target !== successInner) {
       closeSuccessWindow();
     }
   });

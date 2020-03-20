@@ -10,44 +10,42 @@
     OK: 200
   };
 
-  var makeRequest = function (xhrObject, method, url, data, onLoad, onError, timeout, responseType) {
-    xhrObject.timeout = timeout;
-    xhrObject.responseType = responseType;
+  var makeRequest = function (method, url, data, onLoad, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = RESPONSE_TYPE;
+    xhr.timeout = TIMEOUT_MAX;
 
-    xhrObject.addEventListener('load', function () {
-      if (xhrObject.status === StatusCode.OK) {
-        onLoad(xhrObject.response);
+    xhr.addEventListener('load', function () {
+      if (xhr.status === StatusCode.OK) {
+        onLoad(xhr.response);
       } else {
-        onError('Ответ сервера: ' + xhrObject.status + ' ' + xhrObject.statusText);
+        onError('Ответ сервера: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
 
-    xhrObject.addEventListener('error', function () {
+    xhr.addEventListener('error', function () {
       onError('Во время запроса к серверу произошла ошибка');
     });
 
-    xhrObject.addEventListener('timeout', function () {
+    xhr.addEventListener('timeout', function () {
       onError('Превышено время ожидания ответа сервера');
     });
 
-    xhrObject.open(method, url);
-
+    xhr.open(method, url);
     if (data !== false) {
-      xhrObject.send(data);
+      xhr.send(data);
     } else {
-      xhrObject.send();
+      xhr.send();
     }
   };
 
   var load = function (onLoad, onError) {
     var data = false;
-    var xhrLoad = new XMLHttpRequest();
-    makeRequest(xhrLoad, 'GET', URL_GET, data, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
+    makeRequest('GET', URL_GET, data, onLoad, onError);
   };
 
   var send = function (data, onLoad, onError) {
-    var xhrSend = new XMLHttpRequest();
-    makeRequest(xhrSend, 'POST', URL_POST, data, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
+    makeRequest('POST', URL_POST, data, onLoad, onError);
   };
 
   window.backend = {
