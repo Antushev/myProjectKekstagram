@@ -32,13 +32,17 @@
   var onButtonFilterDefaultClick = window.debounce(function () {
     refreshClassActiveButton(buttonFilterDefault);
 
-    refreshPhotos(window.gallery.photos);
+    var photos = window.gallery.photos;
+    window.gallery.currentPhotos = photos;
+
+    refreshPhotos(photos);
   });
 
   var onButtonFilterRandomClick = window.debounce(function () {
     refreshClassActiveButton(buttonFilterRandom);
 
     var photos = window.utils.getRandomElementsFromArray(window.gallery.photos.slice(), NUMBER_RANDOM_ELEMENTS);
+    window.gallery.currentPhotos = photos;
 
     refreshPhotos(photos);
   });
@@ -47,6 +51,7 @@
     refreshClassActiveButton(buttonFilterDiscussed);
 
     var photos = sortCommentsDesc(window.gallery.photos.slice());
+    window.gallery.currentPhotos = photos;
 
     refreshPhotos(photos);
   });
