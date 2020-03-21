@@ -23,20 +23,19 @@
   mainContent.prepend(templateSuccess);
   mainContent.prepend(templateError);
 
-  var picturePreviewOpen = document.querySelector('#upload-file');
-  var picturePreviewClose = document.querySelector('#upload-cancel');
-  var picturePreviewForm = document.querySelector('.img-upload__overlay');
   var formUpload = document.querySelector('.img-upload__form');
+  var picturePreviewOpen = document.querySelector('#upload-file');
+  var picturePreviewForm = formUpload.querySelector('.img-upload__overlay');
+  var picturePreviewClose = picturePreviewForm.querySelector('#upload-cancel');
   var buttonFormUpload = formUpload.querySelector('.img-upload__submit');
 
-  var picturePreview = document.querySelector('.img-upload__preview img');
-  var effectsList = document.querySelector('.effects__list');
-  var pinEffectLevel = document.querySelector('.effect-level__pin');
+  var picturePreview = picturePreviewForm.querySelector('.img-upload__preview img');
+  var effectsList = picturePreviewForm.querySelector('.effects__list');
+  var inputEffectLevel = picturePreviewForm.querySelector('.effect-level__value');
+  var effectLineTotal = picturePreviewForm.querySelector('.effect-level__line');
+  var pinEffectLevel = effectLineTotal.querySelector('.effect-level__pin');
+  var effectLevelDepth = effectLineTotal.querySelector('.effect-level__depth');
   var inputEffectValue = 'none';
-  var inputEffectLevel = document.querySelector('.effect-level__value');
-
-  var effectLineTotal = document.querySelector('.effect-level__line');
-  var effectLevelDepth = document.querySelector('.effect-level__depth');
 
   var inputHashtag = picturePreviewForm.querySelector('.text__hashtags');
   var textareaCommentPreview = picturePreviewForm.querySelector('.text__description');

@@ -39,6 +39,7 @@
     errorBlock.classList.add('hidden');
     renderPictures(data);
     window.gallery.photos = data;
+    window.gallery.currentPhotos = data;
     window.filters.showFilters();
   };
 
@@ -51,6 +52,7 @@
 
   window.gallery = {
     photos: {},
+    currentPhotos: {},
     renderPictures: renderPictures,
     deletePictures: deletePictures
   };
