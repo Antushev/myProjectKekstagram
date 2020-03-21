@@ -4,14 +4,16 @@
   var TIMEOUT_MAX = 10000;
   var RESPONSE_TYPE = 'json';
   var URL_GET = 'https://js.dump.academy/kekstagram/data';
+  var URL_POST = 'https://js.dump.academy/kekstagram';
 
   var StatusCode = {
     OK: 200
   };
 
-  var settingXhr = function (xhr, onLoad, onError, timeout, responseType) {
-    xhr.timeout = timeout;
-    xhr.responseType = responseType;
+  var makeRequest = function (method, url, data, onLoad, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = RESPONSE_TYPE;
+    xhr.timeout = TIMEOUT_MAX;
 
     xhr.addEventListener('load', function () {
       if (xhr.status === StatusCode.OK) {
@@ -28,19 +30,26 @@
     xhr.addEventListener('timeout', function () {
       onError('Превышено время ожидания ответа сервера');
     });
+
+    xhr.open(method, url);
+    if (!data) {
+      xhr.send(data);
+    } else {
+      xhr.send();
+    }
   };
 
   var load = function (onLoad, onError) {
-    var xhr = new XMLHttpRequest();
-    settingXhr(xhr, onLoad, onError, TIMEOUT_MAX, RESPONSE_TYPE);
+    var data = false;
+    makeRequest('GET', URL_GET, data, onLoad, onError);
+  };
 
-    xhr.open('GET', URL_GET);
-    xhr.send();
+  var send = function (data, onLoad, onError) {
+    makeRequest('POST', URL_POST, data, onLoad, onError);
   };
 
   window.backend = {
-    load: load
+    load: load,
+    send: send
   };
 })();
-
-
