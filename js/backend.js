@@ -32,6 +32,7 @@
     });
 
     xhr.open(method, url);
+    
     if (!data) {
       xhr.send(data);
     } else {

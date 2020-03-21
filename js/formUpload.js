@@ -8,14 +8,31 @@
 
   var MAX_DEPTH_WIDTH = 453;
 
+  var TEXT_DEFAULT_BUTTON = 'Отправить';
+  var TEXT_SEND_BUTTON = 'Загрузка...';
+
+  var mainContent = document.querySelector('main');
+  var templateSuccess = document.querySelector('#success').content.querySelector('.success');
+  var templateError = document.querySelector('#error').content.querySelector('.error');
+  var errorInner = templateError.querySelector('.error__inner');
+  var successInner = templateSuccess.querySelector('.success__inner');
+  var buttonCloseSuccess = templateSuccess.querySelector('.success__button');
+  var buttonCloseError = templateError.querySelector('.error__button');
+  templateSuccess.classList.add('visually-hidden');
+  templateError.classList.add('visually-hidden');
+  mainContent.prepend(templateSuccess);
+  mainContent.prepend(templateError);
+
   var picturePreviewOpen = document.querySelector('#upload-file');
   var picturePreviewClose = document.querySelector('#upload-cancel');
   var picturePreviewForm = document.querySelector('.img-upload__overlay');
+  var formUpload = document.querySelector('.img-upload__form');
+  var buttonFormUpload = formUpload.querySelector('.img-upload__submit');
 
   var picturePreview = document.querySelector('.img-upload__preview img');
   var effectsList = document.querySelector('.effects__list');
   var pinEffectLevel = document.querySelector('.effect-level__pin');
-  var inputEffectValue;
+  var inputEffectValue = 'none';
   var inputEffectLevel = document.querySelector('.effect-level__value');
 
   var effectLineTotal = document.querySelector('.effect-level__line');
@@ -51,6 +68,12 @@
     }
   };
 
+  var resetForm = function () {
+    picturePreview.classList = '';
+    picturePreview.style.transform = 'scale(1)';
+    formUpload.reset();
+  };
+
   var onButtonEscapeDown = function () {
     document.addEventListener('keydown', function (evt) {
       picturePreviewOpen.value = '';
@@ -59,6 +82,7 @@
         && evt.target !== textareaCommentPreview) {
         picturePreviewForm.classList.add('hidden');
         document.body.classList.remove('modal-open');
+        resetForm();
       }
     });
   };
@@ -75,10 +99,12 @@
     picturePreviewForm.classList.add('hidden');
     document.body.classList.remove('modal-open');
     document.removeEventListener('keydown', onButtonEscapeDown);
+    resetForm();
   });
 
   effectsList.addEventListener('click', function (evt) {
     if (evt.target.tagName === 'INPUT') {
+      scaleValue.value = 100;
       inputEffectValue = evt.target.value;
       picturePreview.classList = '';
       picturePreview.classList.add('effects__preview--' + inputEffectValue);
@@ -193,5 +219,76 @@
   inputHashtag.addEventListener('input', function () {
     var hashtagsText = inputHashtag.value;
     validityInputHashtags(hashtagsText);
+  });
+
+  var onLoad = function () {
+    picturePreviewForm.classList.add('hidden');
+    buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
+    openSuccessWindow();
+    resetForm();
+  };
+
+  var onError = function () {
+    picturePreviewForm.classList.add('hidden');
+    buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
+    openErrorWindow();
+    resetForm();
+  };
+
+  formUpload.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    buttonFormUpload.textContent = TEXT_SEND_BUTTON;
+    window.backend.send(new FormData(formUpload), onLoad, onError);
+  });
+
+  var onEscapeDownSuccessWindow = function () {
+    document.addEventListener('keydown', function (evt) {
+      if (evt.key === window.utils.Buttons.ESCAPE_KEY) {
+        templateSuccess.classList.add('visually-hidden');
+      }
+    });
+  };
+
+  var onEscapeDownErrorWindow = function () {
+    document.addEventListener('keydown', function (evt) {
+      if (evt.key === window.utils.Buttons.ESCAPE_KEY) {
+        templateError.classList.add('visually-hidden');
+      }
+    });
+  };
+
+  var openSuccessWindow = function () {
+    templateSuccess.classList.remove('visually-hidden');
+    document.addEventListener('keydown', onEscapeDownSuccessWindow);
+  };
+
+  var openErrorWindow = function () {
+    templateError.classList.remove('visually-hidden');
+    document.addEventListener('keydown', onEscapeDownErrorWindow);
+  };
+
+  var closeSuccessWindow = function () {
+    templateSuccess.classList.add('visually-hidden');
+    document.removeEventListener('keydown', onEscapeDownSuccessWindow);
+  };
+
+  var closeErrorWindow = function () {
+    templateError.classList.add('visually-hidden');
+    document.removeEventListener('keydown', onEscapeDownErrorWindow);
+  };
+
+  buttonCloseSuccess.addEventListener('click', function () {
+    closeSuccessWindow();
+  });
+
+  buttonCloseError.addEventListener('click', function () {
+    closeErrorWindow();
+  });
+
+  window.addEventListener('click', function (evt) {
+    if (evt.target !== errorInner || evt.target !== successInner) {
+      closeErrorWindow();
+      closeSuccessWindow();
+    }
   });
 })();
