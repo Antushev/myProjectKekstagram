@@ -32,7 +32,7 @@
     });
 
     xhr.open(method, url);
-    if (!data) {
+    if (data !== false) {
       xhr.send(data);
     } else {
       xhr.send();
