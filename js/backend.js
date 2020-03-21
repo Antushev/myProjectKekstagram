@@ -33,11 +33,7 @@
 
     xhr.open(method, url);
 
-    if (!data) {
-      xhr.send(data);
-    } else {
-      xhr.send();
-    }
+    xhr.send(data);
   };
 
   var load = function (onLoad, onError) {

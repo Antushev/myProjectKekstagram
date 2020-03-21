@@ -70,6 +70,9 @@
   var resetForm = function () {
     picturePreview.classList = '';
     picturePreview.style.transform = 'scale(1)';
+    picturePreview.style.filter = '';
+    pinEffectLevel.style.left = '100%';
+    effectLevelDepth.style.width = '100%';
     formUpload.reset();
   };
 
@@ -222,6 +225,7 @@
 
   var onLoad = function () {
     picturePreviewForm.classList.add('hidden');
+    document.body.classList.remove('modal-open');
     buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
     openSuccessWindow();
     resetForm();
@@ -229,6 +233,7 @@
 
   var onError = function () {
     picturePreviewForm.classList.add('hidden');
+    document.body.classList.remove('modal-open');
     buttonFormUpload.textContent = TEXT_DEFAULT_BUTTON;
     openErrorWindow();
     resetForm();
