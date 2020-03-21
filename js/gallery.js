@@ -3,9 +3,15 @@
 (function () {
   var errorBlock = document.querySelector('.error-server');
   var errorText = errorBlock.querySelector('.error-server__text');
-  var PHOTOS_MAX_COUNT = 25;
+  var pictures;
 
   var templatePicture = document.querySelector('#picture').content.querySelector('.picture');
+
+  var deletePictures = function () {
+    pictures.forEach(function (picture) {
+      picture.remove();
+    });
+  };
 
   var createElement = function (photo, id) {
     var picture = templatePicture.cloneNode(true);
@@ -20,16 +26,20 @@
 
   var renderPictures = function (photos) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < PHOTOS_MAX_COUNT; i++) {
-      fragment.appendChild(createElement(photos[i], i));
-    }
+
+    photos.forEach(function (photo, index) {
+      fragment.appendChild(createElement(photo, index));
+    });
+
     document.querySelector('.pictures').appendChild(fragment);
+    pictures = document.querySelectorAll('.picture');
   };
 
   var onLoad = function (data) {
     errorBlock.classList.add('hidden');
     renderPictures(data);
-    window.photos = data;
+    window.gallery.photos = data;
+    window.filters.showFilters();
   };
 
   var onError = function (textError) {
@@ -38,4 +48,10 @@
   };
 
   window.backend.load(onLoad, onError);
+
+  window.gallery = {
+    photos: {},
+    renderPictures: renderPictures,
+    deletePictures: deletePictures
+  };
 })();
