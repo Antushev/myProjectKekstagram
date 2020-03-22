@@ -571,10 +571,6 @@ main {
           transform: translateX(-50%);
 }
 
-.effect-level__value {
-  display: none;
-}
-
 .effect-level__line {
   position: absolute;
   top: 50%;

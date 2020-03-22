@@ -32,7 +32,6 @@
     });
 
     xhr.open(method, url);
-
     xhr.send(data);
   };
 

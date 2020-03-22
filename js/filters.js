@@ -14,7 +14,7 @@
     button.classList.add('img-filters__button--active');
   };
 
-  var showFilters = function () {
+  var showButtons = function () {
     imgFilter.classList.remove('img-filters--inactive');
   };
 
@@ -61,6 +61,6 @@
   buttonFilterDiscussed.addEventListener('click', onButtonFilterCommentsDescClick);
 
   window.filters = {
-    showFilters: showFilters
+    showButtons: showButtons
   };
 })();

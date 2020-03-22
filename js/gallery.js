@@ -40,7 +40,7 @@
     renderPictures(data);
     window.gallery.photos = data;
     window.gallery.currentPhotos = data;
-    window.filters.showFilters();
+    window.filters.showButtons();
   };
 
   var onError = function (textError) {

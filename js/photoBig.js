@@ -31,11 +31,7 @@
 
     var commentsMaxNumber;
 
-    if (comments.length < COMMENTS_STEP) {
-      commentsMaxNumber = comments.length;
-    } else {
-      commentsMaxNumber = COMMENTS_STEP;
-    }
+    commentsMaxNumber = comments.length < COMMENTS_STEP ? comments.length : COMMENTS_STEP;
 
     for (var i = START_INDEX_ARRAY; i < commentsMaxNumber; i++) {
       fragmentComments.appendChild(createComment(comments[i]));
@@ -46,15 +42,10 @@
     picture.querySelector('.comments-view').textContent = commentsMaxNumber;
   };
 
-  var getNumberAdditionalComments = function (photo, startNumberComments) {
-    var totalComments = photo.comments.length;
+  var getNumberAdditionalComments = function (photo, startNumberComments, totalComments) {
     var commentsMaxNumber;
 
-    if ((totalComments - startNumberComments) < COMMENTS_STEP) {
-      commentsMaxNumber = totalComments;
-    } else {
-      commentsMaxNumber = startNumberComments + COMMENTS_STEP;
-    }
+    commentsMaxNumber = totalComments - startNumberComments ? totalComments : startNumberComments + COMMENTS_STEP;
 
     return commentsMaxNumber;
   };
@@ -62,7 +53,8 @@
   var viewAdditionalComments = function (photo, startNumberComments) {
     var fragmentComments = document.createDocumentFragment();
 
-    var commentsMaxNumber = getNumberAdditionalComments(photo, startNumberComments);
+    var totalComments = photo.comments.length;
+    var commentsMaxNumber = getNumberAdditionalComments(photo, startNumberComments, totalComments);
 
     for (var i = startNumberComments; i < commentsMaxNumber; i++) {
       fragmentComments.appendChild(createComment(photo.comments[i]));
@@ -70,6 +62,9 @@
 
     commentsList.appendChild(fragmentComments);
     picture.querySelector('.comments-view').textContent = commentsMaxNumber;
+    if (totalComments === commentsMaxNumber) {
+      buttonCommentsLoader.classList.add('hidden');
+    }
   };
 
   var renderBigPicture = function (photo) {
@@ -85,11 +80,17 @@
 
   var openBigPicture = function (pictureCurrent) {
     renderBigPicture(pictureCurrent);
+    buttonCommentsLoader.classList.remove('hidden');
+    if (pictureCurrent.comments.length < COMMENTS_STEP) {
+      buttonCommentsLoader.classList.add('hidden');
+    }
     picture.classList.remove('hidden');
+    document.body.classList.add('modal-open');
   };
 
   var closeBigPicture = function () {
     picture.classList.add('hidden');
+    document.body.classList.remove('modal-open');
   };
 
   var addEventKeyBigPicture = function () {
