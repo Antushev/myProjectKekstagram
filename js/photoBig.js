@@ -45,7 +45,7 @@
   var getNumberAdditionalComments = function (photo, startNumberComments, totalComments) {
     var commentsMaxNumber;
 
-    commentsMaxNumber = totalComments - startNumberComments ? totalComments : startNumberComments + COMMENTS_STEP;
+    commentsMaxNumber = totalComments - startNumberComments < COMMENTS_STEP ? totalComments : startNumberComments + COMMENTS_STEP;
 
     return commentsMaxNumber;
   };
@@ -55,7 +55,6 @@
 
     var totalComments = photo.comments.length;
     var commentsMaxNumber = getNumberAdditionalComments(photo, startNumberComments, totalComments);
-
     for (var i = startNumberComments; i < commentsMaxNumber; i++) {
       fragmentComments.appendChild(createComment(photo.comments[i]));
     }
